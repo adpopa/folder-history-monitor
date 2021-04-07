@@ -1,6 +1,7 @@
 package com.sisw.alexpopa.folderhistorymonitor.properties;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ public class DirectoryMonitorServiceProperties {
 
     @Getter
     @Setter
+    @NonNull
     private String directoryPath;
 
 }
