@@ -1,4 +1,4 @@
-package com.sisw.alexpopa.folderhistorymonitor.models;
+package com.sisw.alexpopa.folderhistorymonitor.model;
 
 import lombok.Getter;
 import lombok.Setter;

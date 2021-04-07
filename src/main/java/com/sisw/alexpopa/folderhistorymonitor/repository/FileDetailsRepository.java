@@ -1,6 +1,6 @@
 package com.sisw.alexpopa.folderhistorymonitor.repository;
 
-import com.sisw.alexpopa.folderhistorymonitor.models.FileDetailsModel;
+import com.sisw.alexpopa.folderhistorymonitor.model.FileDetailsModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
