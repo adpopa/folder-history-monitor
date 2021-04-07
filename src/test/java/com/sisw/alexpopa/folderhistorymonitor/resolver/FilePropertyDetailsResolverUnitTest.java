@@ -20,7 +20,7 @@ public class FilePropertyDetailsResolverUnitTest {
     private static Path path;
 
     @BeforeAll
-    static void  setup() {
+    static void setup() {
         creationDateResolver = new FilePropertyDetailsResolver();
     }
 
