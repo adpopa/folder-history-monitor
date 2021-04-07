@@ -1,6 +1,7 @@
 package com.sisw.alexpopa.folderhistorymonitor.service.impl;
 
 import com.sisw.alexpopa.folderhistorymonitor.properties.DirectoryMonitorServiceProperties;
+import com.sisw.alexpopa.folderhistorymonitor.resolver.FilePropertyDetailsResolver;
 import com.sisw.alexpopa.folderhistorymonitor.service.DirectoryMonitorService;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,8 @@ import java.nio.file.*;
 @Log4j2
 public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
 
-    private WatchService watcher;
+    private WatchService watcher = null;
+    private FilePropertyDetailsResolver filePropertyDetailsResolver = null;
 
     @Getter
     @Setter
@@ -43,7 +45,7 @@ public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
             Path path = Paths.get(properties.getDirectoryPath());
 
             try {
-                path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+                path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
 
                 for (;;) {
                     WatchKey key;
@@ -63,8 +65,19 @@ public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
                             log.error("OVERFLOW!!");
                         } else if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
                             log.info("Created: " + filename);
-                        } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) { //TODO: remove MODIFY !!!!
-                            log.info("Modified: " + filename);
+
+                            Path filepath = Paths.get(path + "\\" + filename);
+                            filePropertyDetailsResolver = new FilePropertyDetailsResolver();
+
+                            try {
+                                log.info("File Name: " + filename);
+                                filePropertyDetailsResolver.resolveExtension(String.valueOf(filename)).ifPresent((value) -> log.info("File Extension: " + value));
+                                filePropertyDetailsResolver.resolveSize(filepath).ifPresent((value) -> log.info("File Size: " + value));
+                                filePropertyDetailsResolver.resolveCreationTime(filepath).ifPresent((value) -> log.info("File Creation Date: " + value));
+                                filePropertyDetailsResolver.resolveModificationTime(filepath).ifPresent((value) -> log.info("File Modification Date: " + value));
+                            } catch (RuntimeException e) {
+                                log.error(e);
+                            }
                         } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
                             log.info("Deleted: " + filename);
                         }
