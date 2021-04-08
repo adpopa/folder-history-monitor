@@ -1,26 +1,17 @@
 package com.sisw.alexpopa.folderhistorymonitor;
 
-import com.sisw.alexpopa.folderhistorymonitor.service.DirectoryMonitorService;
-import org.springframework.beans.factory.annotation.Autowired;
+//import com.sisw.alexpopa.folderhistorymonitor.config.MyAppConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import javax.annotation.PostConstruct;
 
 @SpringBootApplication
 @EnableConfigurationProperties
 public class FolderHistoryMonitorApplication {
 
-	@Autowired
-	private DirectoryMonitorService superviser;
-
 	public static void main(String[] args) {
 		SpringApplication.run(FolderHistoryMonitorApplication.class, args);
-	}
-
-	@PostConstruct
-	public void enableDirectoryMonitor() {
-		superviser.monitor();
 	}
 }
