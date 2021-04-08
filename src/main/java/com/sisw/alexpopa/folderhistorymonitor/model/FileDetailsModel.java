@@ -21,6 +21,10 @@ public class FileDetailsModel {
 
     @Getter
     @Setter
+    private String extension;
+
+    @Getter
+    @Setter
     private Long size;
 
     @Getter
@@ -31,11 +35,9 @@ public class FileDetailsModel {
     @Setter
     private Instant modificationDate;
 
-    @OneToOne
-    @JoinColumn(name = "fileDetails_id", unique = true)
-    @Getter
-    @Setter
-    private FileModel fileModel;
+    public FileDetailsModel() {
+
+    }
 
     /**
      *
@@ -49,24 +51,11 @@ public class FileDetailsModel {
         this.modificationDate = modificationDate;
     }
 
-    /**
-     *
-     * @param _id
-     * @param size
-     * @param creationDate
-     * @param modificationDate
-     */
-    public FileDetailsModel(Long _id, Long size, Instant creationDate, Instant modificationDate) {
-        this._id = _id;
-        this.size = size;
-        this.creationDate = creationDate;
-        this.modificationDate = modificationDate;
-    }
-
     @Override
     public String toString() {
         return "FileDetailsModel{" +
                 "_id=" + _id +
+                ", extension='" + extension + '\'' +
                 ", size=" + size +
                 ", creationDate=" + creationDate +
                 ", modificationDate=" + modificationDate +

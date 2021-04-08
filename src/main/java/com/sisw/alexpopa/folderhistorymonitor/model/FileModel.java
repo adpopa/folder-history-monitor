@@ -33,25 +33,36 @@ public class FileModel {
     @Setter
     private Instant operationDateTme;
 
-    /**
-     *
-     * @param filename
-     * @param eventKind
-     * @param operationDateTme
-     */
-    public FileModel(String filename, String eventKind, Instant operationDateTme) {
+    @OneToOne
+    @JoinColumn(name = "fileDetails_id", unique = true)
+    @Getter
+    @Setter
+    private FileDetailsModel fileDetails;
+
+    public FileModel() {
+    }
+
+    public FileModel(String filename, String eventKind, Instant operationDateTme, FileDetailsModel fileDetails) {
         this.filename = filename;
         this.eventKind = eventKind;
         this.operationDateTme = operationDateTme;
+        this.fileDetails = fileDetails;
     }
 
     @Override
     public String toString() {
-        return "FileModel{" +
+        String str;
+
+        str = "FileModel{" +
                 "_id=" + _id +
                 ", filename='" + filename + '\'' +
                 ", eventKind='" + eventKind + '\'' +
-                ", operationDateTme=" + operationDateTme +
-                '}';
+                ", operationDateTme=" + operationDateTme;
+
+        if(fileDetails == null) {
+            return str + ", fileDetails=" + '}';
+        }
+
+        return str + ", fileDetails=" + fileDetails.toString() + '}';
     }
 }

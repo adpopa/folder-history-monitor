@@ -1,8 +1,11 @@
 package com.sisw.alexpopa.folderhistorymonitor.service.impl;
 
+import com.sisw.alexpopa.folderhistorymonitor.model.FileDetailsModel;
+import com.sisw.alexpopa.folderhistorymonitor.model.FileModel;
 import com.sisw.alexpopa.folderhistorymonitor.properties.DirectoryMonitorServiceProperties;
 import com.sisw.alexpopa.folderhistorymonitor.resolver.FilePropertyDetailsResolver;
 import com.sisw.alexpopa.folderhistorymonitor.service.DirectoryMonitorService;
+import com.sisw.alexpopa.folderhistorymonitor.service.FileService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.time.Instant;
 
 /**
  * @author Alex Daniel Popa
@@ -25,6 +29,9 @@ public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
     @Getter
     @Setter
     private DirectoryMonitorServiceProperties properties;
+
+    @Autowired
+    private FileService fileService;
 
     @Autowired
     public DirectoryMonitorServiceImpl(DirectoryMonitorServiceProperties properties) {
@@ -70,16 +77,39 @@ public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
                             filePropertyDetailsResolver = new FilePropertyDetailsResolver();
 
                             try {
-                                log.info("File Name: " + filename);
-                                filePropertyDetailsResolver.resolveExtension(String.valueOf(filename)).ifPresent((value) -> log.info("File Extension: " + value));
-                                filePropertyDetailsResolver.resolveSize(filepath).ifPresent((value) -> log.info("File Size: " + value));
-                                filePropertyDetailsResolver.resolveCreationTime(filepath).ifPresent((value) -> log.info("File Creation Date: " + value));
-                                filePropertyDetailsResolver.resolveModificationTime(filepath).ifPresent((value) -> log.info("File Modification Date: " + value));
+//                                log.info("File Name: " + filename);
+//                                filePropertyDetailsResolver.resolveExtension(String.valueOf(filename)).ifPresent((value) -> log.info("File Extension: " + value));
+//                                filePropertyDetailsResolver.resolveSize(filepath).ifPresent((value) -> log.info("File Size: " + value));
+//                                filePropertyDetailsResolver.resolveCreationTime(filepath).ifPresent((value) -> log.info("File Creation Date: " + value));
+//                                filePropertyDetailsResolver.resolveModificationTime(filepath).ifPresent((value) -> log.info("File Modification Date: " + value));
+
+                                FileDetailsModel fileDetails = new FileDetailsModel();
+
+                                filePropertyDetailsResolver.resolveExtension(String.valueOf(filename)).ifPresent(fileDetails::setExtension);
+                                filePropertyDetailsResolver.resolveSize(filepath).ifPresent(fileDetails::setSize);
+                                filePropertyDetailsResolver.resolveCreationTime(filepath).ifPresent(fileDetails::setCreationDate);
+                                filePropertyDetailsResolver.resolveModificationTime(filepath).ifPresent(fileDetails::setModificationDate);
+
+                                FileModel fileEntry = new FileModel();
+                                fileEntry.setFilename(String.valueOf(filename));
+                                fileEntry.setEventKind("ENTRY_CREATE");
+                                fileEntry.setOperationDateTme(Instant.now());
+                                fileEntry.setFileDetails(fileDetails);
+
+                                log.info("Entry created: "+ fileService.createFileEntry(fileEntry).toString());
+
                             } catch (RuntimeException e) {
                                 log.error(e);
                             }
                         } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
                             log.info("Deleted: " + filename);
+
+                            FileModel fileEntry = new FileModel();
+                            fileEntry.setFilename(String.valueOf(filename));
+                            fileEntry.setEventKind("ENTRY_DELETE");
+                            fileEntry.setOperationDateTme(Instant.now());
+
+                            log.info("Entry created: "+ fileService.createFileEntryNoDetails(fileEntry).toString());
                         }
 
                         boolean valid = key.reset();
