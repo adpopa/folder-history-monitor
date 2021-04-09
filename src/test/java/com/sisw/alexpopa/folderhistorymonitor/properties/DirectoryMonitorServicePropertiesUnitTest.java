@@ -25,7 +25,7 @@ public class DirectoryMonitorServicePropertiesUnitTest {
 
         Exception exception = assertThrows(NullPointerException.class, () -> dmsp.setDirectoryPath(null));
 
-        String expectedMessage = "is marked non-null but is null";
+        String expectedMessage = "Value cannot be null";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));

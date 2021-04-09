@@ -6,9 +6,8 @@ import com.sisw.alexpopa.folderhistorymonitor.properties.DirectoryMonitorService
 import com.sisw.alexpopa.folderhistorymonitor.resolver.FilePropertyDetailsResolver;
 import com.sisw.alexpopa.folderhistorymonitor.service.DirectoryMonitorService;
 import com.sisw.alexpopa.folderhistorymonitor.service.FileService;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,14 +19,13 @@ import java.time.Instant;
  * @author Alex Daniel Popa
  */
 @Service
-@Log4j2
 public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
+
+    private static final Logger LOGGER = LogManager.getLogger(DirectoryMonitorServiceImpl.class);
 
     private WatchService watcher = null;
     private FilePropertyDetailsResolver filePropertyDetailsResolver = null;
 
-    @Getter
-    @Setter
     private DirectoryMonitorServiceProperties properties;
 
     @Autowired
@@ -40,14 +38,14 @@ public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
         try {
             watcher = FileSystems.getDefault().newWatchService();
         } catch (IOException e) {
-            log.error(e);
+            LOGGER.error(e);
         }
     }
 
     @Override
     public void monitor() {
         if(watcher != null) {
-            log.info("Monitoring path: " + properties.getDirectoryPath());
+            LOGGER.info("Monitoring path: " + properties.getDirectoryPath());
 
             Path path = Paths.get(properties.getDirectoryPath());
 
@@ -69,19 +67,19 @@ public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
                         Path filename = ev.context();
 
                         if (kind == StandardWatchEventKinds.OVERFLOW) {
-                            log.error("OVERFLOW!!");
+                            LOGGER.error("OVERFLOW!!");
                         } else if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                            log.info("Created: " + filename);
+                            LOGGER.info("Created: " + filename);
 
                             Path filepath = Paths.get(path + "\\" + filename);
                             filePropertyDetailsResolver = new FilePropertyDetailsResolver();
 
                             try {
 //                                log.info("File Name: " + filename);
-//                                filePropertyDetailsResolver.resolveExtension(String.valueOf(filename)).ifPresent((value) -> log.info("File Extension: " + value));
-//                                filePropertyDetailsResolver.resolveSize(filepath).ifPresent((value) -> log.info("File Size: " + value));
-//                                filePropertyDetailsResolver.resolveCreationTime(filepath).ifPresent((value) -> log.info("File Creation Date: " + value));
-//                                filePropertyDetailsResolver.resolveModificationTime(filepath).ifPresent((value) -> log.info("File Modification Date: " + value));
+//                                filePropertyDetailsResolver.resolveExtension(String.valueOf(filename)).ifPresent((value) -> LOGGER.info("File Extension: " + value));
+//                                filePropertyDetailsResolver.resolveSize(filepath).ifPresent((value) -> LOGGER.info("File Size: " + value));
+//                                filePropertyDetailsResolver.resolveCreationTime(filepath).ifPresent((value) -> LOGGER.info("File Creation Date: " + value));
+//                                filePropertyDetailsResolver.resolveModificationTime(filepath).ifPresent((value) -> LOGGER.info("File Modification Date: " + value));
 
                                 FileDetailsModel fileDetails = new FileDetailsModel();
 
@@ -96,20 +94,20 @@ public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
                                 fileEntry.setOperationDateTme(Instant.now());
                                 fileEntry.setFileDetails(fileDetails);
 
-                                log.info("Entry created: "+ fileService.createFileEntry(fileEntry).toString());
+                                LOGGER.info("Entry created: "+ fileService.createFileEntry(fileEntry).toString());
 
                             } catch (RuntimeException e) {
-                                log.error(e);
+                                LOGGER.error(e);
                             }
                         } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                            log.info("Deleted: " + filename);
+                            LOGGER.info("Deleted: " + filename);
 
                             FileModel fileEntry = new FileModel();
                             fileEntry.setFilename(String.valueOf(filename));
                             fileEntry.setEventKind("ENTRY_DELETE");
                             fileEntry.setOperationDateTme(Instant.now());
 
-                            log.info("Entry created: "+ fileService.createFileEntryNoDetails(fileEntry).toString());
+                            LOGGER.info("Entry created: "+ fileService.createFileEntryNoDetails(fileEntry).toString());
                         }
 
                         boolean valid = key.reset();
@@ -119,7 +117,7 @@ public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
                     }
                 }
             } catch (IOException e) {
-                log.error(e);
+                LOGGER.error(e);
             }
         }
     }

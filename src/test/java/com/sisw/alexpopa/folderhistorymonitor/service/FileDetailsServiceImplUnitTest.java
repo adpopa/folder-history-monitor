@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class FileDetailsServiceImplUnitTest {
 
     @TestConfiguration
-    public class FileDetailsServiceImplTestContextConfiguration {
+    static class FileDetailsServiceImplTestContextConfiguration {
         @Bean
         public FileDetailsService fileDetailsService() {
             return new FileDetailsServiceImpl();
@@ -45,9 +45,8 @@ public class FileDetailsServiceImplUnitTest {
     @BeforeAll
     public void setup() {
         fileDetails = new FileDetailsModel(".ext",10000L, Instant.now(), Instant.now());
-        Long id = 1L;
+
         Mockito.when(fileDetailsRepository.save(fileDetails)).thenReturn(fileDetails);
-        Mockito.when(fileDetailsRepository.findById(id)).thenReturn(Optional.of(fileDetails));
     }
 
     @Test

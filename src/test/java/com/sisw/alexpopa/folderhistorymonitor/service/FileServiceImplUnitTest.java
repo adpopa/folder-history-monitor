@@ -30,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class FileServiceImplUnitTest {
 
     @TestConfiguration
-    public class FileServiceImplTestContextConfiguration {
+    static class FileServiceImplTestContextConfiguration {
         @Bean
-        public FileService fileDetailsService() {
+        public FileService fileService() {
             return new FileServiceImpl();
         }
     }
@@ -43,20 +43,23 @@ public class FileServiceImplUnitTest {
     @MockBean
     private FileRepository fileRepository;
 
+    @MockBean
+    private FileDetailsService fileDetailsService;
+
     private FileModel fileModel = null;
 
     @BeforeAll
     public void setup() {
         FileDetailsModel fileDetails = new FileDetailsModel(".ext",10000L, Instant.now(), Instant.now());
-        fileModel = new FileModel("filename","ENTRY_CREATE",Instant.now(), fileDetails);
+        fileModel = new FileModel("filename", "ENTRY_CREATE", Instant.now(), fileDetails);
 
-        Long id = 1L;
+        Mockito.when(fileDetailsService.createFileDetails(fileDetails)).thenReturn(fileDetails);
         Mockito.when(fileRepository.save(fileModel)).thenReturn(fileModel);
-        Mockito.when(fileRepository.findById(id)).thenReturn(Optional.of(fileModel));
+
     }
 
     @Test
-    public void whenInsertFileDetails_thenFileDetailsShouldBeReturned() {
+    public void whenInsertFile_thenFileShouldBeReturned() {
         // when
         FileModel returned = fileService.createFileEntry(fileModel);
 
