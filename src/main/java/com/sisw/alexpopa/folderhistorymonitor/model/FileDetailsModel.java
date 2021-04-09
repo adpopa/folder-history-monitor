@@ -17,7 +17,7 @@ public class FileDetailsModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Getter
     @Setter
-    private Long _id;
+    private Long id;
 
     @Getter
     @Setter
@@ -39,13 +39,8 @@ public class FileDetailsModel {
 
     }
 
-    /**
-     *
-     * @param size
-     * @param creationDate
-     * @param modificationDate
-     */
-    public FileDetailsModel(Long size, Instant creationDate, Instant modificationDate) {
+    public FileDetailsModel(String extension, Long size, Instant creationDate, Instant modificationDate) {
+        this.extension = extension;
         this.size = size;
         this.creationDate = creationDate;
         this.modificationDate = modificationDate;
@@ -54,7 +49,7 @@ public class FileDetailsModel {
     @Override
     public String toString() {
         return "FileDetailsModel{" +
-                "_id=" + _id +
+                "_id=" + id +
                 ", extension='" + extension + '\'' +
                 ", size=" + size +
                 ", creationDate=" + creationDate +

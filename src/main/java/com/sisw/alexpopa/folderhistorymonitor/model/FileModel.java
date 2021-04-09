@@ -17,7 +17,7 @@ public class FileModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Getter
     @Setter
-    private Long _id;
+    private Long id;
 
     @Getter
     @Setter
@@ -54,7 +54,7 @@ public class FileModel {
         String str;
 
         str = "FileModel{" +
-                "_id=" + _id +
+                "_id=" + id +
                 ", filename='" + filename + '\'' +
                 ", eventKind='" + eventKind + '\'' +
                 ", operationDateTme=" + operationDateTme;

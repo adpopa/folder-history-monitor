@@ -6,6 +6,8 @@ import com.sisw.alexpopa.folderhistorymonitor.service.FileDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /**
  * @author Alex Daniel Popa
  */
@@ -18,5 +20,10 @@ public class FileDetailsServiceImpl implements FileDetailsService {
     @Override
     public FileDetailsModel createFileDetails(FileDetailsModel fileDetails) {
         return fileDetailsRepository.save(fileDetails);
+    }
+
+    @Override
+    public Optional<FileDetailsModel> findByFileDetailsId(Long id) {
+        return fileDetailsRepository.findById(id);
     }
 }

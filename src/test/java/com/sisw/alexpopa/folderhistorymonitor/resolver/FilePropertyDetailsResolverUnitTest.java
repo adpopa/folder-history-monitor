@@ -14,24 +14,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author Alex Daniel Popa
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class FilePropertyDetailsResolverUnitTest {
 
-    private static FilePropertyDetailsResolver creationDateResolver;
-    private static Path path;
+    private FilePropertyDetailsResolver creationDateResolver;
+    private Path path;
 
     @BeforeAll
-    static void setup() {
+    public void setup() {
         creationDateResolver = new FilePropertyDetailsResolver();
     }
 
     @BeforeEach
-    void init() throws Exception {
+    public void init() throws Exception {
         path = Files.createTempFile("createdFile", ".txt");
         Files.write(path, "Hello World\n".getBytes(StandardCharsets.UTF_8));
     }
 
     @AfterEach
-    void tearDown() throws Exception{
+    public void tearDown() throws Exception{
         Files.delete(path);
     }
 
