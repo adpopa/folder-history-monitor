@@ -1,8 +1,5 @@
 package com.sisw.alexpopa.folderhistorymonitor.model;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.*;
 import java.time.Instant;
 
@@ -15,25 +12,55 @@ public class FileDetailsModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Getter
-    @Setter
     private Long id;
 
-    @Getter
-    @Setter
     private String extension;
 
-    @Getter
-    @Setter
     private Long size;
 
-    @Getter
-    @Setter
     private Instant creationDate;
 
-    @Getter
-    @Setter
     private Instant modificationDate;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
+    }
+
+    public Instant getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Instant creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Instant getModificationDate() {
+        return modificationDate;
+    }
+
+    public void setModificationDate(Instant modificationDate) {
+        this.modificationDate = modificationDate;
+    }
 
     public FileDetailsModel() {
 

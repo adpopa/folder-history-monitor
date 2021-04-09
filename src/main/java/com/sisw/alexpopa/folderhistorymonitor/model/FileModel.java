@@ -1,8 +1,5 @@
 package com.sisw.alexpopa.folderhistorymonitor.model;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.*;
 import java.time.Instant;
 
@@ -15,29 +12,59 @@ public class FileModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Getter
-    @Setter
     private Long id;
 
-    @Getter
-    @Setter
     private String filename;
 
     @Column(nullable = false)
-    @Getter
-    @Setter
     private String eventKind;
 
     @Column(nullable = false)
-    @Getter
-    @Setter
     private Instant operationDateTme;
 
     @OneToOne
     @JoinColumn(name = "fileDetails_id", unique = true)
-    @Getter
-    @Setter
     private FileDetailsModel fileDetails;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public String getEventKind() {
+        return eventKind;
+    }
+
+    public void setEventKind(String eventKind) {
+        this.eventKind = eventKind;
+    }
+
+    public Instant getOperationDateTme() {
+        return operationDateTme;
+    }
+
+    public void setOperationDateTme(Instant operationDateTme) {
+        this.operationDateTme = operationDateTme;
+    }
+
+    public FileDetailsModel getFileDetails() {
+        return fileDetails;
+    }
+
+    public void setFileDetails(FileDetailsModel fileDetails) {
+        this.fileDetails = fileDetails;
+    }
 
     public FileModel() {
     }
