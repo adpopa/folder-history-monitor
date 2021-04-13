@@ -1,16 +1,22 @@
 package com.sisw.alexpopa.folderhistorymonitor.service.impl;
 
+import com.sisw.alexpopa.folderhistorymonitor.grpc.monitor.DirectoryMonitorServiceGrpc;
+import com.sisw.alexpopa.folderhistorymonitor.grpc.monitor.MonitorRequest;
+import com.sisw.alexpopa.folderhistorymonitor.grpc.monitor.MonitorResponse;
 import com.sisw.alexpopa.folderhistorymonitor.model.FileDetailsModel;
 import com.sisw.alexpopa.folderhistorymonitor.model.FileModel;
 import com.sisw.alexpopa.folderhistorymonitor.properties.DirectoryMonitorServiceProperties;
 import com.sisw.alexpopa.folderhistorymonitor.resolver.FilePropertyDetailsResolver;
 import com.sisw.alexpopa.folderhistorymonitor.service.DirectoryMonitorService;
 import com.sisw.alexpopa.folderhistorymonitor.service.FileService;
+import io.grpc.stub.StreamObserver;
+import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.Instant;
@@ -18,8 +24,9 @@ import java.time.Instant;
 /**
  * @author Alex Daniel Popa
  */
-@Service
-public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
+//@Service
+@GrpcService
+public class DirectoryMonitorServiceImpl extends DirectoryMonitorServiceGrpc.DirectoryMonitorServiceImplBase {
 
     private static final Logger LOGGER = LogManager.getLogger(DirectoryMonitorServiceImpl.class);
 
@@ -43,7 +50,7 @@ public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
     }
 
     @Override
-    public void monitor() {
+    public void monitor(MonitorRequest request, StreamObserver<MonitorResponse> responseObserver) {
         if(watcher != null) {
             LOGGER.info("Monitoring path: " + properties.getDirectoryPath());
 
@@ -94,7 +101,23 @@ public class DirectoryMonitorServiceImpl implements DirectoryMonitorService {
                                 fileEntry.setOperationDateTme(Instant.now());
                                 fileEntry.setFileDetails(fileDetails);
 
-                                LOGGER.info("Entry created: "+ fileService.createFileEntry(fileEntry).toString());
+                                FileModel newEntry = fileService.createFileEntry(fileEntry);
+
+                                LOGGER.info("Entry created: "+ newEntry.toString());
+
+                                MonitorResponse response = MonitorResponse.newBuilder()
+                                        .setEntryId(newEntry.getId())
+                                        .setFilename(newEntry.getFilename())
+                                        .setEventKind(newEntry.getEventKind())
+                                        .setOperationDateTme(newEntry.getOperationDateTme().toString())
+                                        .setFileDetailsId(newEntry.getFileDetails().getId())
+                                        .setExtension(newEntry.getFileDetails().getExtension())
+                                        .setSize(newEntry.getFileDetails().getSize())
+                                        .setCreationDate(newEntry.getFileDetails().getCreationDate().toString())
+                                        .setModificationDate(newEntry.getFileDetails().getModificationDate().toString())
+                                        .build();
+
+                                responseObserver.onNext(response);
 
                             } catch (RuntimeException e) {
                                 LOGGER.error(e);

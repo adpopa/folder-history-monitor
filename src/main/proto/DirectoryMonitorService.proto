@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package com.sisw.alexpopa.folderhistorymonitor.grpc.monitor;
+
+message MonitorRequest {}
+
+message MonitorResponse {
+  int64 entryId = 1;
+  string filename = 2;
+  string eventKind = 3;
+  string operationDateTme = 4;
+  int64 fileDetailsId = 5;
+  string extension = 6;
+  int64 size = 7;
+  string creationDate = 8;
+  string modificationDate = 9;
+}
+
+service DirectoryMonitorService {
+  rpc monitor(MonitorRequest) returns (stream MonitorResponse);
+}

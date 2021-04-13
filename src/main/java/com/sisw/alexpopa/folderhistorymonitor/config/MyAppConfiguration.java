@@ -9,7 +9,7 @@ import org.springframework.context.event.EventListener;
 /**
  * @author Alex Daniel Popa
  */
-@Configuration
+//@Configuration
 public class MyAppConfiguration {
 
     @Autowired
