@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Properties>
-        <Property name="LOG_PATTERN">%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %p %m%n</Property>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} --- [%p] --- %m%n</Property>
         <Property name="APP_LOG_ROOT">./target/logs</Property>
     </Properties>
     <Appenders>
@@ -23,7 +23,7 @@
         <Logger name="com.sisw.alexpopa.folderhistorymonitor" additivity="false" level="info">
             <AppenderRef ref="Console" />
         </Logger>
-        <Root level="ALL" >
+        <Root level="debug" >
             <AppenderRef ref="appLog" />
         </Root>
     </Loggers>
