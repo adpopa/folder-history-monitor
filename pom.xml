@@ -15,6 +15,7 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<name>folder-history-monitor</name>
 	<description>Folder History Monitor project</description>
+	<packaging>jar</packaging>
 
 	<properties>
 		<java.version>11</java.version>
