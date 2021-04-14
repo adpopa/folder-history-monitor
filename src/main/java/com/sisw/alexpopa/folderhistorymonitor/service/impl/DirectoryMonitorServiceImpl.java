@@ -61,6 +61,9 @@ public class DirectoryMonitorServiceImpl extends DirectoryMonitorServiceGrpc.Dir
 
                 for (;;) {
                     WatchKey key;
+                    MonitorResponse response;
+
+//                    LOGGER.info(response.toString());
 
                     try {
                         key = watcher.take();
@@ -82,12 +85,6 @@ public class DirectoryMonitorServiceImpl extends DirectoryMonitorServiceGrpc.Dir
                             filePropertyDetailsResolver = new FilePropertyDetailsResolver();
 
                             try {
-//                                log.info("File Name: " + filename);
-//                                filePropertyDetailsResolver.resolveExtension(String.valueOf(filename)).ifPresent((value) -> LOGGER.info("File Extension: " + value));
-//                                filePropertyDetailsResolver.resolveSize(filepath).ifPresent((value) -> LOGGER.info("File Size: " + value));
-//                                filePropertyDetailsResolver.resolveCreationTime(filepath).ifPresent((value) -> LOGGER.info("File Creation Date: " + value));
-//                                filePropertyDetailsResolver.resolveModificationTime(filepath).ifPresent((value) -> LOGGER.info("File Modification Date: " + value));
-
                                 FileDetailsModel fileDetails = new FileDetailsModel();
 
                                 filePropertyDetailsResolver.resolveExtension(String.valueOf(filename)).ifPresent(fileDetails::setExtension);
@@ -105,7 +102,7 @@ public class DirectoryMonitorServiceImpl extends DirectoryMonitorServiceGrpc.Dir
 
                                 LOGGER.info("Entry created: "+ newEntry.toString());
 
-                                MonitorResponse response = MonitorResponse.newBuilder()
+                                response = MonitorResponse.newBuilder()
                                         .setEntryId(newEntry.getId())
                                         .setFilename(newEntry.getFilename())
                                         .setEventKind(newEntry.getEventKind())
@@ -120,17 +117,38 @@ public class DirectoryMonitorServiceImpl extends DirectoryMonitorServiceGrpc.Dir
                                 responseObserver.onNext(response);
 
                             } catch (RuntimeException e) {
-                                LOGGER.error(e);
+                                LOGGER.info("on CREATE error:" + e);
                             }
                         } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                            LOGGER.info("Deleted: " + filename);
+                            try {
+                                LOGGER.info("Deleted: " + filename);
 
-                            FileModel fileEntry = new FileModel();
-                            fileEntry.setFilename(String.valueOf(filename));
-                            fileEntry.setEventKind("ENTRY_DELETE");
-                            fileEntry.setOperationDateTme(Instant.now());
+                                FileModel fileEntry = new FileModel();
+                                fileEntry.setFilename(String.valueOf(filename));
+                                fileEntry.setEventKind("ENTRY_DELETE");
+                                fileEntry.setOperationDateTme(Instant.now());
 
-                            LOGGER.info("Entry created: "+ fileService.createFileEntryNoDetails(fileEntry).toString());
+                                LOGGER.info("Before the save " + fileEntry.toString());
+                                FileModel newEntry = fileService.createFileEntry(fileEntry);
+
+                                LOGGER.info("Entry created: "+ newEntry.toString());
+
+                                response = MonitorResponse.newBuilder()
+                                        .setEntryId(newEntry.getId())
+                                        .setFilename(newEntry.getFilename())
+                                        .setEventKind(newEntry.getEventKind())
+                                        .setOperationDateTme(newEntry.getOperationDateTme().toString())
+                                        .setFileDetailsId(0L)
+                                        .setExtension("")
+                                        .setSize(0L)
+                                        .setCreationDate("")
+                                        .setModificationDate("")
+                                        .build();
+
+                                responseObserver.onNext(response);
+                            } catch (RuntimeException e) {
+                                LOGGER.info("on DELETE error:" + e);
+                            }
                         }
 
                         boolean valid = key.reset();
