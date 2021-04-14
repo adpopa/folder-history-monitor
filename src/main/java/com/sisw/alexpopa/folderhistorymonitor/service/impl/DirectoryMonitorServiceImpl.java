@@ -117,7 +117,7 @@ public class DirectoryMonitorServiceImpl extends DirectoryMonitorServiceGrpc.Dir
                                 responseObserver.onNext(response);
 
                             } catch (RuntimeException e) {
-                                LOGGER.info("on CREATE error:" + e);
+                                LOGGER.info("on CREATE file --- " + e);
                             }
                         } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
                             try {
@@ -129,7 +129,7 @@ public class DirectoryMonitorServiceImpl extends DirectoryMonitorServiceGrpc.Dir
                                 fileEntry.setOperationDateTme(Instant.now());
 
                                 LOGGER.info("Before the save " + fileEntry.toString());
-                                FileModel newEntry = fileService.createFileEntry(fileEntry);
+                                FileModel newEntry = fileService.createFileEntryNoDetails(fileEntry);
 
                                 LOGGER.info("Entry created: "+ newEntry.toString());
 
@@ -138,16 +138,11 @@ public class DirectoryMonitorServiceImpl extends DirectoryMonitorServiceGrpc.Dir
                                         .setFilename(newEntry.getFilename())
                                         .setEventKind(newEntry.getEventKind())
                                         .setOperationDateTme(newEntry.getOperationDateTme().toString())
-                                        .setFileDetailsId(0L)
-                                        .setExtension("")
-                                        .setSize(0L)
-                                        .setCreationDate("")
-                                        .setModificationDate("")
-                                        .build();
+                                        .buildPartial();
 
                                 responseObserver.onNext(response);
                             } catch (RuntimeException e) {
-                                LOGGER.info("on DELETE error:" + e);
+                                LOGGER.error("on DELETE file --- " + e);
                             }
                         }
 
