@@ -1,22 +1,18 @@
 package com.sisw.alexpopa.folderhistorymonitor.service.impl;
 
-import com.sisw.alexpopa.folderhistorymonitor.grpc.monitor.DirectoryMonitorServiceGrpc;
-import com.sisw.alexpopa.folderhistorymonitor.grpc.monitor.MonitorRequest;
-import com.sisw.alexpopa.folderhistorymonitor.grpc.monitor.MonitorResponse;
 import com.sisw.alexpopa.folderhistorymonitor.model.FileDetailsModel;
 import com.sisw.alexpopa.folderhistorymonitor.model.FileModel;
 import com.sisw.alexpopa.folderhistorymonitor.properties.DirectoryMonitorServiceProperties;
 import com.sisw.alexpopa.folderhistorymonitor.resolver.FilePropertyDetailsResolver;
-import com.sisw.alexpopa.folderhistorymonitor.service.DirectoryMonitorService;
 import com.sisw.alexpopa.folderhistorymonitor.service.FileService;
+import com.sisw.alexpopa.grpc.DirectoryMonitorService.*;
+import com.sisw.alexpopa.grpc.monitorServiceGrpc.*;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.Instant;
@@ -26,7 +22,7 @@ import java.time.Instant;
  */
 //@Service
 @GrpcService
-public class DirectoryMonitorServiceImpl extends DirectoryMonitorServiceGrpc.DirectoryMonitorServiceImplBase {
+public class DirectoryMonitorServiceImpl extends monitorServiceImplBase {
 
     private static final Logger LOGGER = LogManager.getLogger(DirectoryMonitorServiceImpl.class);
 
@@ -51,7 +47,8 @@ public class DirectoryMonitorServiceImpl extends DirectoryMonitorServiceGrpc.Dir
 
     @Override
     public void monitor(MonitorRequest request, StreamObserver<MonitorResponse> responseObserver) {
-        if(watcher != null) {
+       if(watcher != null) {
+//            LOGGER.info("Request content: " + request.getMonitoredFolderPath());
             LOGGER.info("Monitoring path: " + properties.getDirectoryPath());
 
             Path path = Paths.get(properties.getDirectoryPath());
