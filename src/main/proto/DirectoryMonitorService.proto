@@ -2,11 +2,19 @@ syntax = "proto3";
 
 option java_package = "com.sisw.alexpopa.grpc";
 
-message MonitorRequest {
-  string monitoredFolderPath = 1;
+message StartMonitorRequest {
+  string msgStartMonitorRequest = 1; //monitored folder path
 }
 
-message MonitorResponse {
+message StartMonitorResponse {
+  string msgStartMonitorResponse = 1;
+}
+
+message StartRecordingRequest {
+  string msgStartRecordingRequest = 1;
+}
+
+message StartRecordingResponse {
   int64 entryId = 1;
   string filename = 2;
   string eventKind = 3;
@@ -18,6 +26,25 @@ message MonitorResponse {
   string modificationDate = 9;
 }
 
-service monitorService {
-  rpc monitor(MonitorRequest) returns (stream MonitorResponse);
+message StopRecordingRequest {
+  string msgStopRecordingRequest = 1;
+}
+
+message StopRecordingResponse {
+  string msgStopRecordingResponse = 1;
+}
+
+message StopMonitorRequest {
+  string msgStopMonitorRequest = 1;
+}
+
+message StopMonitorResponse {
+  string msgStopMonitorResponse = 1;
+}
+
+service MonitorService {
+  rpc startMonitor(StartMonitorRequest) returns (StartMonitorResponse);
+  rpc startRecording(StartRecordingRequest) returns (stream StartRecordingResponse);
+  rpc stopRecording(StopRecordingRequest) returns (StopRecordingResponse);
+  rpc stopMonitor(StopMonitorRequest) returns (StopMonitorResponse);
 }

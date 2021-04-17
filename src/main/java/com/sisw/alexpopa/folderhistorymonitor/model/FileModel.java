@@ -24,7 +24,7 @@ public class FileModel {
 
     @OneToOne
     @JoinColumn(name = "fileDetails_id", unique = true)
-    private FileDetailsModel fileDetails;
+    private FileDetailsModel fileDetails = null;
 
     public Long getId() {
         return id;
