@@ -10,11 +10,11 @@ message StartMonitorResponse {
   string msgStartMonitorResponse = 1;
 }
 
-message StartRecordingRequest {
+message RecorderRequest {
   string msgStartRecordingRequest = 1;
 }
 
-message StartRecordingResponse {
+message RecorderResponse {
   int64 entryId = 1;
   string filename = 2;
   string eventKind = 3;
@@ -26,11 +26,11 @@ message StartRecordingResponse {
   string modificationDate = 9;
 }
 
-message StopRecordingRequest {
+message StopRecorderRequest {
   string msgStopRecordingRequest = 1;
 }
 
-message StopRecordingResponse {
+message StopRecorderResponse {
   string msgStopRecordingResponse = 1;
 }
 
@@ -44,7 +44,7 @@ message StopMonitorResponse {
 
 service MonitorService {
   rpc startMonitor(StartMonitorRequest) returns (StartMonitorResponse);
-  rpc startRecording(StartRecordingRequest) returns (stream StartRecordingResponse);
-  rpc stopRecording(StopRecordingRequest) returns (StopRecordingResponse);
+  rpc recorder(RecorderRequest) returns (stream RecorderResponse);
+  rpc stopRecorder(StopRecorderRequest) returns (StopRecorderResponse);
   rpc stopMonitor(StopMonitorRequest) returns (StopMonitorResponse);
 }

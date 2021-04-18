@@ -30,7 +30,8 @@ public class MonitorGrpcService extends MonitorServiceImplBase {
     private FilePropertyDetailsResolver filePropertyDetailsResolver = null;
 
     private String dirPath = null;
-    private boolean startRecoding = false;
+    private boolean startRecoder = false;
+    private boolean startMonitor = false;
     private List<FileModel> entryList = new ArrayList<FileModel>();
 
     @Autowired
@@ -42,30 +43,40 @@ public class MonitorGrpcService extends MonitorServiceImplBase {
         LOGGER.info("StartMonitorRequest:" + dirPath);
 
         StartMonitorResponse.Builder response = StartMonitorResponse.newBuilder();
-        response.setMsgStartMonitorResponse("Monitor started");
+
+        if(!startMonitor) {
+            response.setMsgStartMonitorResponse("Monitor started");
+            responseObserver.onNext(response.build());
+            responseObserver.onCompleted();
+
+            startMonitor = true;
+
+            startFolderMonitor();
+        }
+
+        response.setMsgStartMonitorResponse("Monitor is working already");
         responseObserver.onNext(response.build());
         responseObserver.onCompleted();
-
-        startFolderMonitor();
 
     }
 
     @Override
-    public void startRecording(StartRecordingRequest request, StreamObserver<StartRecordingResponse> responseObserver) {
-        if(!startRecoding)
+    public void recorder(RecorderRequest request, StreamObserver<RecorderResponse> responseObserver) {
+        if(!startRecoder)
             LOGGER.info("Started Recording...");
 
-        startRecoding = true;
+        startRecoder = true;
 
         if(!entryList.isEmpty()) {
             for(FileModel entry : entryList) {
-                StartRecordingResponse.Builder response = StartRecordingResponse.newBuilder();
+                RecorderResponse.Builder response = RecorderResponse.newBuilder();
+                //Build for ENTRY_DELETE
                 response.setEntryId(entry.getId())
                                         .setFilename(entry.getFilename())
                                         .setEventKind(entry.getEventKind())
                                         .setOperationDateTme(entry.getOperationDateTme().toString())
                                         .buildPartial();
-
+                //Build on ENTRY_CREATE
                 if(entry.getFileDetails() != null) {
                     response.setFileDetailsId(entry.getFileDetails().getId())
                                         .setExtension(entry.getFileDetails().getExtension())
@@ -82,14 +93,23 @@ public class MonitorGrpcService extends MonitorServiceImplBase {
     }
 
     @Override
-    public void stopRecording(StopRecordingRequest request, StreamObserver<StopRecordingResponse> responseObserver) {
-        super.stopRecording(request, responseObserver);
+    public void stopRecorder(StopRecordingRequest request, StreamObserver<StopRecordingResponse> responseObserver) {
+//        request.getMsgStopRecordingRequest() == "Stop the Recorder"
+        startRecoder = false;
+
+        StopRecordingResponse response = StopRecordingResponse.newBuilder().setMsgStopRecordingResponse("Recorder is off").build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+
+        LOGGER.info("Recorder is off");
     }
 
     @Override
     public void stopMonitor(StopMonitorRequest request, StreamObserver<StopMonitorResponse> responseObserver) {
         String msgStop = "Stop the Monitor";
         LOGGER.info("StartMonitorRequest:" + request.getMsgStopMonitorRequest());
+
+        startMonitor = false;
 
         StopMonitorResponse.Builder response = StopMonitorResponse.newBuilder();
 
@@ -169,7 +189,7 @@ public class MonitorGrpcService extends MonitorServiceImplBase {
                                 LOGGER.info("Entry created: " + newEntry.toString());
 
                                 // build list for response for client
-                                if(startRecoding) {
+                                if(startRecoder) {
                                     entryList.add(newEntry);
                                 }
 
@@ -190,7 +210,7 @@ public class MonitorGrpcService extends MonitorServiceImplBase {
                                 LOGGER.info("Entry created: " + newEntry.toString());
 
                                 // build list for response for client
-                                if(startRecoding) {
+                                if(startRecoder) {
                                     entryList.add(newEntry);
                                 }
 
